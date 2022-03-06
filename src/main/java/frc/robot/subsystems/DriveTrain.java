@@ -26,8 +26,10 @@ public class DriveTrain extends SubsystemBase {
   // Drive Class
   private final DifferentialDrive m_Drive = new DifferentialDrive(leftFrontMotor, rightFrontMotor);
 
-  //Acceleration limiter to compensate for back heavyness
-  SlewRateLimiter filter = new SlewRateLimiter(0.8);
+  /* Acceleration limiter to compensate for back heavyness
+   *
+   *As this value moves up the more the robot will be allowed to accelerate */
+  SlewRateLimiter filter = new SlewRateLimiter(1.8);  
 
   double joyThreshold = 0.05; // Default threshold value from XboxController
 
@@ -73,7 +75,7 @@ public class DriveTrain extends SubsystemBase {
     if(Math.abs(xSpeed) > joyThreshold  || Math.abs(zRotation) > joyThreshold ) {
       m_Drive.arcadeDrive(xSpeed, zRotation);
 
-      m_Drive.arcadeDrive( filter.calculate(xSpeed*1.0), zRotation*-0.6);
+      m_Drive.arcadeDrive( filter.calculate(xSpeed*1.0), zRotation*-0.75);
     }
     else {
       m_Drive.arcadeDrive(0.0, 0.0);
@@ -90,5 +92,4 @@ public class DriveTrain extends SubsystemBase {
     leftFrontMotor.set(ControlMode.PercentOutput, 0.0);
     rightBackMotor.set(ControlMode.PercentOutput, 0.0);
   }
-
 }

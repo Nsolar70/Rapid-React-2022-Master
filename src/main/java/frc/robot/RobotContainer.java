@@ -12,6 +12,7 @@ import frc.robot.commands.AutoDriveBackwards;
 import frc.robot.commands.ClimbHigh;
 import frc.robot.commands.ClimbLow;
 import frc.robot.commands.ClimbToZero;
+import frc.robot.commands.DriveLimeControl;
 import frc.robot.commands.EjectBall;
 import frc.robot.commands.Flipper_Intake;
 import frc.robot.commands.HoldBall;
@@ -26,6 +27,7 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Flipper;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Intake;
+import oi.limelightvision.limelight.frc.LimeLight;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -57,6 +59,7 @@ public class RobotContainer {
   private final RunClimberUp m_runClimberUp = new RunClimberUp(m_climber);
   private final RunClimberDown m_runClimberDown = new RunClimberDown(m_climber);
   private final Flipper_Intake m_Flipper_Intake = new Flipper_Intake(m_flipper, m_intake);
+  
 
   //Auto Commands 
   private final AutoDriveBackwards m_autoDriveBackwards = new AutoDriveBackwards(m_driveTrain);
@@ -66,6 +69,9 @@ public class RobotContainer {
   XboxController m_driverController = new XboxController(OIConstants.kdriveJoyStick);
   XboxController m_actuatorController = new XboxController(OIConstants.kactuatorJoyStick);
  
+
+  // LimeLight
+  LimeLight m_limeLight = new LimeLight(); 
 
  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -109,10 +115,13 @@ public class RobotContainer {
      new JoystickButton(m_driverController, Button.kA.value) .toggleWhenPressed(m_climbToZero);
 
       //Run Climber up command when the 'Left Bumper' is pressed *Enable for testing*
-     // new JoystickButton(m_driverController, Button.kLeftBumper.value).toggleWhenPressed(m_runClimberUp);
+      new JoystickButton(m_driverController, Button.kLeftBumper.value).whileHeld(m_runClimberUp);
 
      //Run Climber down command when the 'Right Bumper' is pressed *Enable for testing*
-     //new JoystickButton(m_driverController, Button.kRightBumper.value).toggleWhenPressed(m_runClimberDown);
+     new JoystickButton(m_driverController, Button.kRightBumper.value).whileHeld(m_runClimberDown);
+
+    // new JoystickButton(m_driverController, Button.kX.value).whileHeld(new DriveLimeControl(() -> 
+                   //   m_driverController.getRightY(), m_limeLight, m_driveTrain)); 
 
 
    /*  if(isIntakeOn = true){

@@ -20,16 +20,17 @@ public class Flipper extends SubsystemBase {
    private final WPI_TalonSRX flipperMotor = new WPI_TalonSRX(ManipulatorConstants.kflipperMotor);
 
    //local setpoint for moving to position by magic motion
+   static double iaccum = 0;
    private double setPointSpin;
+   private double sensorPosition;
+   double posError;
+   double dCurrentPosition;
    double positionError;
    double targetPosition;
    int currentPostion;
    int CurrentPosition;
-   static double iaccum = 0;
-   double posError;
-   double dCurrentPosition;
   
-   private double sensorPosition;
+   // Delay on button press for flipper (Need to add If-Else  statement to finish)
    public Boolean mblnIsFinished = false;
    
   /** Creates a new Flipper. */
@@ -71,7 +72,7 @@ public class Flipper extends SubsystemBase {
     flipperMotor.selectProfileSlot(EncoderConstants.kSlotIdx, EncoderConstants.kPIDLoopIdx);
     flipperMotor.config_kF(0, 0.0, EncoderConstants.kTimeoutMs);
     flipperMotor.config_kP(0, 0.35, EncoderConstants.kTimeoutMs);
-    flipperMotor.config_kI(0, 0.00055, EncoderConstants.kTimeoutMs);
+    flipperMotor.config_kI(0, 0.00205, EncoderConstants.kTimeoutMs); //55
     flipperMotor.config_kD(0, 1.0, EncoderConstants.kTimeoutMs);
 
     /**
@@ -122,20 +123,21 @@ public class Flipper extends SubsystemBase {
   }
 
   public void runFlipper() {
+   // if ( mblnIsFinished == false){
 
-    // Holds addtional command untill finished
-    mblnIsFinished = true;
+      // Holds addtional command untill finished
+      mblnIsFinished = true;
 
-    // Set position to one rev 
-    setPointSpin = 1;
+      // Set position to one rev 
+      setPointSpin = 1;
 
-    setPointSpin = this.getValues(setPointSpin); // 4096 counts for each revolution
-    targetPosition = setPointSpin;
-    dCurrentPosition = sensorPosition + setPointSpin;
+      setPointSpin = this.getValues(setPointSpin); // 4096 counts for each revolution
+      targetPosition = setPointSpin;
+      dCurrentPosition = sensorPosition + setPointSpin;
      
-    /* Motion Magic - 4096 ticks/rev */
-    flipperMotor.set(ControlMode.Position, dCurrentPosition);
-  
+      /* Motion Magic - 4096 ticks/rev */
+      flipperMotor.set(ControlMode.Position, dCurrentPosition);
+    //}
   }
     
 
@@ -147,7 +149,7 @@ public class Flipper extends SubsystemBase {
   private double getValues(double dblValue) {
     
     //Return the setpoint for moving lift
-    dblValue = setPointSpin * 4076;
+    dblValue = setPointSpin * 4096;
     
     return dblValue;
   }

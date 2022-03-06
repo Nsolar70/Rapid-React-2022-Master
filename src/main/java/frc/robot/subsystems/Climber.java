@@ -9,12 +9,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -22,6 +16,7 @@ import frc.robot.Constants;
 public class Climber extends SubsystemBase {
 
   private final CANSparkMax m_climberMotor = new CANSparkMax(Constants.ManipulatorConstants.kclimberMotor, MotorType.kBrushless);
+
 
   private RelativeEncoder m_encoder;
 
@@ -33,15 +28,9 @@ public class Climber extends SubsystemBase {
   private double Lowsetpoint = 20; // ?
   private double Zerosetpoint; //0
    // Temporary untill zeroing code is released
-
-  private static final String TABLE_NAME = "Preferences";
-  
-  private static final NetworkTable m_table;
-  private ShuffleboardTab VariablesTab = Shuffleboard.getTab("Variables");
-  private NetworkTableEntry Offset = VariablesTab.add("Offset", 0).getEntry(); // Temporary untill zeroing code is released
+   private double Offset;
 
 
- 
   public Climber() {
     // set factory defaults
     m_climberMotor.restoreFactoryDefaults();
@@ -55,12 +44,11 @@ public class Climber extends SubsystemBase {
     // set default motor mode (Brake/Coast)
     m_climberMotor.setIdleMode(IdleMode.kBrake);
 
-
-    m_encoder = m_climberMotor.getEncoder();
-
      // initialze PID controller and encoder objects
      m_pidController = m_climberMotor.getPIDController();
      m_encoder = m_climberMotor.getEncoder();
+     
+     Offset = m_encoder.getPosition();
  
      // PID coefficients
      /*kP = 5e-5; 
@@ -77,7 +65,7 @@ public class Climber extends SubsystemBase {
      maxAcc = 600;
  
      // set PID coefficients
-     m_pidController.setP(0.00005); // 5e-5
+     m_pidController.setP(0.00075); // 5e-5
      m_pidController.setI(0.000001); // 1e-6
      m_pidController.setD(0);
      m_pidController.setIZone(0);
@@ -132,7 +120,7 @@ public class Climber extends SubsystemBase {
     // Calculates the true position by using Offset
                   
     // Set point = Counts wanted + how much the encoder is off of 0 counts when set at hard zero mechanically   
-    Lowsetpoint = 20 + (Offset.getDouble(0));
+    Lowsetpoint = 20 + Offset;
 
     m_pidController.setReference(Lowsetpoint, CANSparkMax.ControlType.kSmartMotion);
 
@@ -141,7 +129,7 @@ public class Climber extends SubsystemBase {
   
   public void HighPosition(){
     // Set point = Counts wanted + how much the encoder is off of 0 counts when set at hard zero mechanically
-    Highsetpoint = 124 + Offset.getDouble(0);
+    Highsetpoint = 124 + Offset;
   
     m_pidController.setReference(Highsetpoint, CANSparkMax.ControlType.kSmartMotion);
 
@@ -149,7 +137,7 @@ public class Climber extends SubsystemBase {
 
   public void ZeroPosition(){
     // Set point = Counts wanted + how much the encoder is off of 0 counts when set at hard zero mechanically
-    Zerosetpoint = 0 + Offset.getDouble(0);
+    Zerosetpoint = 0 + Offset;
 
     m_pidController.setReference( Zerosetpoint, CANSparkMax.ControlType.kSmartMotion);
   }
@@ -160,17 +148,13 @@ public class Climber extends SubsystemBase {
   }
 
   public void RunDown(){
-    m_climberMotor.set(-0.1);
+    m_climberMotor.set(-0.70);
   }
 
   public void StopMotion(){
     m_climberMotor.set(0.0);
   }
 
-  static {
-    m_table = NetworkTableInstance.getDefault().getTable(TABLE_NAME);
-    m_table.getEntry(".type").setString("RobotPreferences");
-   }
 }
 
 

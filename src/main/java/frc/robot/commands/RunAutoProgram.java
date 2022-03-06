@@ -26,7 +26,7 @@ public class RunAutoProgram extends SequentialCommandGroup {
       parallel(
       new RunFlywheel(flywheel),
       new RunFlipper(flipper)).withTimeout(2.5),
-      new AutoDriveBackwards(driveTrain).withTimeout(1.0)
+      new AutoDriveBackwards(driveTrain).withTimeout(1.5)
       );
     
   }

@@ -15,6 +15,7 @@ import frc.robot.commands.ClimbToZero;
 import frc.robot.commands.DriveLimeControl;
 import frc.robot.commands.EjectBall;
 import frc.robot.commands.Flipper_Intake;
+import frc.robot.commands.FlywheelLimeControl;
 import frc.robot.commands.HoldBall;
 import frc.robot.commands.IntakeBall;
 import frc.robot.commands.RunAutoProgram;
@@ -59,6 +60,7 @@ public class RobotContainer {
   private final RunClimberUp m_runClimberUp = new RunClimberUp(m_climber);
   private final RunClimberDown m_runClimberDown = new RunClimberDown(m_climber);
   private final Flipper_Intake m_Flipper_Intake = new Flipper_Intake(m_flipper, m_intake);
+  private final FlywheelLimeControl m_FlywheelLimeControl = new FlywheelLimeControl(m_flywheel);
   
 
   //Auto Commands 
@@ -93,16 +95,16 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
 
-     // Run Intake Ball command when the 'X' button is pressed
+     // Run Intake Ball command when the 'X' button is held
      new JoystickButton(m_actuatorController, Button.kX.value).whileHeld(m_intakeBall);
      
-     // Run Eject Ball command when the 'B' button is pressed
-    new JoystickButton(m_actuatorController, Button.kB.value).whileHeld(m_ejectBall);
+     // Run Eject Ball command when the 'B' button is held
+     new JoystickButton(m_actuatorController, Button.kB.value).whileHeld(m_ejectBall);
 
-     //Run Hold Ball command when the 'Left Bumper' button is pressed
+     //Toggle Hold Ball command when the 'Left Bumper' button is pressed
      new JoystickButton(m_actuatorController, Button.kLeftBumper.value).toggleWhenPressed(m_holdBall);
 
-     //Run Shoot Ball command when the 'Y' button is pressed
+     //Toggle Shoot Ball command when the 'Y' button is pressed
      new JoystickButton(m_actuatorController, Button.kY.value ).toggleWhenPressed(m_runFlywheel);
 
      // Run RunFlipper command when the 'A' button is pressed
@@ -114,14 +116,18 @@ public class RobotContainer {
      //Run Climb Low Command when the 'A' Button is pressed
      new JoystickButton(m_driverController, Button.kA.value) .toggleWhenPressed(m_climbToZero);
 
-      //Run Climber up command when the 'Left Bumper' is pressed *Enable for testing*
-      new JoystickButton(m_driverController, Button.kLeftBumper.value).whileHeld(m_runClimberUp);
+     //Run Climber up command when the 'Left Bumper' button is held 
+     new JoystickButton(m_driverController, Button.kLeftBumper.value).whileHeld(m_runClimberUp);
 
-     //Run Climber down command when the 'Right Bumper' is pressed *Enable for testing*
+     //Run Climber down command when the 'Right Bumper' button is held
      new JoystickButton(m_driverController, Button.kRightBumper.value).whileHeld(m_runClimberDown);
-
-    // new JoystickButton(m_driverController, Button.kX.value).whileHeld(new DriveLimeControl(() -> 
-                   //   m_driverController.getRightY(), m_limeLight, m_driveTrain)); 
+     
+     // Run Drive Lime Light Control when the 'Back' button is held
+     new JoystickButton(m_driverController, Button.kBack.value).whileHeld(new DriveLimeControl(() -> 
+                      m_driverController.getRightY(), m_limeLight, m_driveTrain)); 
+      
+     // Run Flywheel Lime Light Control when the 'Back' is held
+     new JoystickButton(m_actuatorController, Button.kBack.value).whileHeld(m_FlywheelLimeControl);
 
 
    /*  if(isIntakeOn = true){
